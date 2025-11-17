@@ -1,5 +1,3 @@
-import java.io.BufferedReader;
-
 import java.util.*;
 import java.net.*;
 import java.io.*;
@@ -10,13 +8,23 @@ public class Client {
     private String host;
     private int port;
     private Socket socket;
-    BufferedReader in; 
+    private BufferedReader in; 
+    private PrintWriter out;
 
 
     public Client(String host, int port) throws IOException {
-        this.host = host;
-        this.port = port;
-        this.socket = new Socket(host, port);
+
+        try{
+            this.host = host;
+            this.port = port;
+            this.socket = new Socket(host, port);
+
+            this.in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            this.out = new PrintWriter(socket.getOutputStream(), true);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     public Socket getSocket() {
@@ -24,18 +32,38 @@ public class Client {
     }
 
     public void handshake() throws IOException {
-        PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-        out.println("12345");
+        try 
+        {
+            out.println("12345");
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+        
     }
 
-    public String request(String num)
+    public String request(String num) throws IOException
     {
-        return num; // for now 
+        try
+        {
+            out.println(num);
+            return in.readLine(); 
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
     }
 
-    public void disconnect() throws IOException {
+    public void disconnect() {
+       try
+       {
         socket.close();
+       }
+         catch (Exception e){
+            e.printStackTrace();
+        }
+        
     }
-
 
 }
